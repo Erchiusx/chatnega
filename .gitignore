@@ -1,0 +1,6 @@
+*.out
+*.err
+dist-newstyle/
+.vscode
+*.hi
+*.key
