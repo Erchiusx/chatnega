@@ -1,12 +1,23 @@
 module Main where
+
 import Control.Monad.IO.Class (liftIO)
-import Data.Aeson
+import Data.Aeson (ToJSON, Value, encode)
+import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as BL
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import Network.HTTP.Req
-import Data.ByteString qualified as BS
-
+  ( POST (POST),
+    ReqBodyJson (ReqBodyJson),
+    defaultHttpConfig,
+    header,
+    https,
+    jsonResponse,
+    req,
+    responseBody,
+    runReq,
+    (/:),
+  )
 
 -- 定义消息结构
 data Message = Message
