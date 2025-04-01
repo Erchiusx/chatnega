@@ -45,6 +45,7 @@ common depends
                     , url
                     , req
                     , vector
+                    , transformers
 
 common modules
     other-modules:    Agent.Types
@@ -66,6 +67,7 @@ common languageversion
                         , DataKinds
                         , DeriveGeneric
                         , ImportQualifiedPost
+                        , ScopedTypeVariables
 
 executable chatnega
     import:  warnings

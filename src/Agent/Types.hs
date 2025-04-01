@@ -4,10 +4,11 @@ module Agent.Types
     Model'Response (..),
     Agent (..),
     Model (..),
-    response'to'message,
   )
 where
 
+import Control.Monad.IO.Class (MonadIO (..))
+import Control.Monad.Trans.Class (MonadTrans (..))
 import Data.Aeson
   ( FromJSON (parseJSON),
     ToJSON,
@@ -20,7 +21,8 @@ import Data.Text (Text)
 import Data.Vector qualified as V
 import GHC.Generics (Generic)
 import Network.HTTP.Req
-  ( Scheme (Https),
+  ( MonadHttp (..),
+    Scheme (Https),
     Url,
   )
 
@@ -50,9 +52,6 @@ data Model'Response = Model'Response
     message :: Message
   }
   deriving (Show, Generic)
-
-response'to'message :: Model'Response -> Message
-response'to'message res = res.message
 
 instance ToJSON Model'Response
 
@@ -104,6 +103,22 @@ instance Monad (Agent state m) where
       s
       (\v s' -> runAgent (f v) s' succ kfail)
       (\err s' -> kfail err s')
+
+instance MonadFail (Agent state m) where
+  fail msg = Agent $ \s _ fail ->
+    fail msg s
+
+instance MonadTrans (Agent state) where
+  lift ma = Agent $ \s succ _ ->
+    ma >>= \v -> v `succ` s
+
+instance (MonadIO m) => MonadIO (Agent state m) where
+  liftIO io = Agent $ \s succ _ ->
+    liftIO io >>= \v -> succ v s
+
+instance (MonadHttp m) => MonadHttp (Agent state m) where
+  handleHttpException = lift . handleHttpException
+  getHttpConfig = lift getHttpConfig
 
 data Model = Agent'Model
   { name :: String,
