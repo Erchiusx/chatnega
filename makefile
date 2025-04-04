@@ -5,9 +5,7 @@ all:
 	cabal build
 
 exec:
-	cabal run chatnega
+	cabal run $$(basename $$(dir *.cabal) .cabal)
 
 lint:
-	for file in $$(find src -name *.hs); do\
-		ormolu -minplace $$file;\
-	done
+	fourmolu -i src
