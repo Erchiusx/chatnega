@@ -36,7 +36,8 @@ ask model message = Agent $ \state succ failF -> do
     Right response ->
       response
         `succ` state
-          { history = state.history ++ [message, response.message]
+          { history =
+              state.history ++ [message, response.message]
           }
     Left e ->
       show e `failF` state
@@ -51,7 +52,9 @@ ask model message = Agent $ \state succ failF -> do
           ]
       headers =
         header "Content-Type" "application/json"
-          <> header "Authorization" ("Bearer " <> model.api'key)
+          <> header
+            "Authorization"
+            ("Bearer " <> model.api'key)
 
     responseResult <-
       req
@@ -62,11 +65,17 @@ ask model message = Agent $ \state succ failF -> do
         headers
     return $ responseBody responseResult
 
-tryHttp :: MonadIO m => IO a -> m (Either HttpException a)
+tryHttp
+  :: MonadIO m => IO a -> m (Either HttpException a)
 tryHttp action = liftIO $ try @HttpException action
 
 runIO :: State s -> Agent s Req a -> IO a
 runIO st ag =
   runReq
     defaultHttpConfig
-    (runAgent ag st (\v _ -> return v) (\e _ -> error e))
+    ( runAgent
+        ag
+        st
+        (\v _ -> return v)
+        (\e _ -> error e)
+    )

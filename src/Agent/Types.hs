@@ -63,7 +63,10 @@ instance ToJSON Model'Response
 instance FromJSON Model'Response where
   parseJSON val = do
     arr <-
-      withObject "Total_Response" (\v -> v .: "choices") val
+      withObject
+        "Total_Response"
+        (\v -> v .: "choices")
+        val
     let res = arr V.! 0
     withObject
       "Model'Response"
@@ -148,7 +151,11 @@ try a = Agent $ \v succ fail ->
 instance Alternative (Agent state m) where
   empty = Agent $ \s _ fail -> fail "empty" s
   a1 <|> a2 = Agent $ \s succ kfail ->
-    runAgent a1 s succ (\_ _ -> runAgent a2 s succ kfail)
+    runAgent
+      a1
+      s
+      succ
+      (\_ _ -> runAgent a2 s succ kfail)
 
 instance MonadPlus (Agent state m) where
   mzero = empty

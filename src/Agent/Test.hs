@@ -66,4 +66,6 @@ main = do
         jsonResponse
         headers
 
-    liftIO $ BL.putStr $ encode (responseBody r :: Value)
+    liftIO $
+      BL.putStr $
+        encode (responseBody r :: Value)
